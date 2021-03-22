@@ -7,16 +7,11 @@ from blog.models import Article
 
 class FieldsMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
+        self.fields = ['title', 'slug', 'category', 'description',
+                       'thumbnail', 'publish', 'status', 'is_special']
         if request.user.is_superuser:
-            self.fields = ['author', 'title', 'slug', 'category', 'description',
-                           'thumbnail', 'publish', 'status', 'is_special']
+            self.fields.append('author')
 
-        elif request.user.is_author:
-            self.fields = ['title', 'slug', 'category', 'description',
-                            'thumbnail', 'publish','is_special']
-
-        else:
-            raise Http404('you cant see this page')
         return super().dispatch( request, *args, **kwargs)
 
 
@@ -25,7 +20,7 @@ class FieldsMixin(AccessMixin):
 class AuthorAccessMixin(AccessMixin):
     def dispatch(self, request,pk, *args, **kwargs):
         article = get_object_or_404(Article, pk=pk)
-        if article.author == request.user  and article.status in ['b', 'd'] or request.user.is_superuser:
+        if article.author == request.user and article.status in ['b', 'd'] or request.user.is_superuser:
             return super().dispatch(request, *args, **kwargs)
 
         else:
@@ -43,11 +38,13 @@ class SuperUserAccessMixin(AccessMixin):
 
 class AuthorsAccessMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser or request.user.is_author:
-            return super().dispatch(request, *args, **kwargs)
-
+        if request.user.is_authenticated:
+            if request.user.is_superuser or request.user.is_author:
+                return super().dispatch(request, *args, **kwargs)
+            else:
+                return redirect('account:profile')
         else:
-            return redirect('account:profile')
+            return redirect('account:login')
 
 
 class FormvalidMixin():
@@ -57,5 +54,6 @@ class FormvalidMixin():
         else:
             self.obj = form.save(commit=False)
             self.obj.author = self.request.user
-            self.obj.status = 'd'
+            if not self.obj.status == 'i':
+                self.obj.status = 'd'
         return super().form_valid(form)
