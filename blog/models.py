@@ -42,7 +42,7 @@ class Article(models.Model):
 		('d', 'پیش‌نویس'), 	#draft
 		('p', "منتشر شده"),		#publish
 		('i', "درحال بررسی"),		#investigation
-		('b', "برگشت خورده")		,#back
+		('b', "برگشت خورده"),           #back
 	)
 	author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='articles', verbose_name="نویسنده")
 	title = models.CharField(max_length=200, verbose_name="عنوان مقاله")
@@ -54,6 +54,9 @@ class Article(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
 	status = models.CharField(max_length=1, choices=STATUS_CHOICES, verbose_name="وضعیت")
+	is_special = models.BooleanField('مفاله ویژه',default=False)
+
+
 
 	class Meta:
 		verbose_name = "مقاله"
