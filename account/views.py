@@ -1,16 +1,17 @@
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from account.forms import ProfileForm
-from account.mixins import FieldsMixin, FormvalidMixin, AuthorAccessMixin, SuperUserAccessMixin
+from account.mixins import FieldsMixin, FormvalidMixin, AuthorAccessMixin, SuperUserAccessMixin, AuthorsAccessMixin
 from account.models import User
 from blog.models import Article
 
 # Create your views here.
 
-class ArticleList(LoginRequiredMixin, ListView):
+class ArticleList(AuthorsAccessMixin, ListView):
 	def get_queryset(self):
 		if self.request.user.is_superuser:
 			return Article.objects.all()
@@ -20,7 +21,7 @@ class ArticleList(LoginRequiredMixin, ListView):
 
 
 
-class ArticleCreate(LoginRequiredMixin,FieldsMixin,FormvalidMixin ,CreateView):
+class ArticleCreate(AuthorsAccessMixin,FieldsMixin,FormvalidMixin ,CreateView):
 	model = Article
 	template_name = 'registration/article_create_update.html'
 
@@ -50,3 +51,13 @@ class Profile(LoginRequiredMixin,UpdateView):
 			'user': self.request.user
 		})
 		return kwargs
+
+
+class Login(LoginView):
+	def get_success_url(self):
+		user = self.request.user
+
+		if user.is_superuser or user.is_author:
+			return reverse_lazy('account:home')
+		else:
+			return reverse_lazy('account:profile')
