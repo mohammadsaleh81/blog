@@ -14,9 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin, auth
-from django.urls import path, include
+from django.urls import path, include, re_path
 
-from account.views import Login
+from account.views import Login, Register, activate
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +24,9 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('login/', Login.as_view(), name='login'),
     path('', include('django.contrib.auth.urls')),
+    path('register/', Register.as_view(), name='register'),
+    re_path(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        activate, name='activate'),
 ]
 
 from django.conf import settings

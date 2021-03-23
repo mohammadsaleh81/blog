@@ -1,5 +1,6 @@
 Django==2.2.11
 django-crispy-forms==1.11.1
+django-gravatar2==1.4.4
 django-widget-tweaks==1.4.8
 Pillow==8.1.2
 python-decouple==3.4
