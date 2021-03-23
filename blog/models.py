@@ -1,8 +1,12 @@
+from comment.models import comments
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericRelation
+
+from comment.models import Comment
 
 from account.models import User
 from extensions.utils import jalali_converter
@@ -55,7 +59,7 @@ class Article(models.Model):
 	updated = models.DateTimeField(auto_now=True)
 	status = models.CharField(max_length=1, choices=STATUS_CHOICES, verbose_name="وضعیت")
 	is_special = models.BooleanField('مقاله ویژه',default=False)
-
+	comments = GenericRelation(Comment)
 
 
 	class Meta:
