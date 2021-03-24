@@ -1,6 +1,6 @@
 {% extends 'blog/base.html' %}
-
 {% load static %}
+{% load ratings %}
 
 {% block main %}
   <!-- Page Header -->
@@ -33,6 +33,7 @@
                   <span class="badge badge-danger" style="font-size: 14px">ویژه</span>
                 {% endif %}
               </h2>
+              <div>{% ratings article %}</div>
               <h3 class="post-subtitle">
                 {{article.description|truncatewords:30|striptags}}
               </h3>

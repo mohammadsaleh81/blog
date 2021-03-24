@@ -27,7 +27,8 @@ urlpatterns = [
     path('register/', Register.as_view(), name='register'),
     re_path(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         activate, name='activate'),
-    path('comment/', include('comment.urls'))
+    path('comment/', include('comment.urls')),
+    re_path(r'^ratings/', include('star_ratings.urls', namespace='ratings'))
 ]
 
 from django.conf import settings

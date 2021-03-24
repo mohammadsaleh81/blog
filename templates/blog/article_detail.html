@@ -1,6 +1,6 @@
 {% extends 'blog/base.html' %}
 {% load comment_tags %}
-
+{% load ratings %}
 
 {% block title %}
   {{object.title}}
@@ -19,6 +19,7 @@
                   <span class="badge badge-danger" style="font-size: 14px">ویژه</span>
               {% endif %}
             <time>{{object.jpublish}}</time>
+            <div>{% ratings object %}</div>
           </div>
         </div>
       </div>
