@@ -1,5 +1,7 @@
-from django.views.generic import ListView, DetailView
+from datetime import datetime, timedelta
 
+from django.views.generic import ListView, DetailView
+from django.db.models import Count, Q
 from account.mixins import AuthorAccessMixin
 from account.models import User
 from django.core.paginator import Paginator
@@ -9,14 +11,23 @@ from .models import Article, Category
 
 # Create your views here.
 class ArticleList(ListView):
+
 	queryset = Article.objects.published()
 	paginate_by = 5
+
+
 
 
 class ArticleDetail(DetailView):
 	def get_object(self):
 		slug = self.kwargs.get('slug')
-		return get_object_or_404(Article.objects.published(), slug=slug)
+		article = get_object_or_404(Article.objects.published(), slug=slug)
+		ip_address = self.request.user.ip_address
+
+		if ip_address not in article.hits.all():
+			article.hits.add(ip_address)
+
+		return article
 
 class ArticlePreview(AuthorAccessMixin,DetailView):
 	def get_object(self):

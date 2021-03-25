@@ -60,6 +60,7 @@ class Article(models.Model):
 	status = models.CharField(max_length=1, choices=STATUS_CHOICES, verbose_name="وضعیت")
 	is_special = models.BooleanField('مقاله ویژه',default=False)
 	comments = GenericRelation(Comment)
+	hits = models.ManyToManyField('IPAddress',through='ArticleHit', blank=True, related_name="hits",verbose_name='بازدیدها' )
 
 
 	class Meta:
@@ -86,3 +87,12 @@ class Article(models.Model):
 	category_to_str.short_description = "دسته‌بندی"
 
 	objects = ArticleManager()
+
+
+class IPAddress(models.Model):
+	ip_assress = models.GenericIPAddressField('ادرس ای پی')
+
+class ArticleHit(models.Model):
+	article = models.ForeignKey(Article, on_delete=models.CASCADE)
+	ip_address = models.ForeignKey(IPAddress, on_delete=models.CASCADE)
+	created = models.DateTimeField(auto_now_add=True)

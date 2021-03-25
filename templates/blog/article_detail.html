@@ -1,6 +1,7 @@
 {% extends 'blog/base.html' %}
 {% load comment_tags %}
 {% load ratings %}
+{% load base_tags %}
 
 {% block title %}
   {{object.title}}
@@ -20,6 +21,7 @@
               {% endif %}
             <time>{{object.jpublish}}</time>
             <div>{% ratings object %}</div>
+            <div> بازدیدها :{{ object.hits.count }}</div>
           </div>
         </div>
       </div>
@@ -31,6 +33,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto text-justify">
+        {% popular_articles %}
           {% if object.is_special %}
             {% if user.is_authenticated and user.is_special_user or user == object.author or user.is_superuser %}
                 {{object.description|safe}}

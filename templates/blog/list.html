@@ -1,6 +1,7 @@
 {% extends 'blog/base.html' %}
 {% load static %}
 {% load ratings %}
+{% load base_tags %}
 
 {% block main %}
   <!-- Page Header -->
@@ -23,6 +24,7 @@
       <div class="col-lg-8 col-md-10 mx-auto">
 
         {% block header %}{% endblock %}
+        {% popular_articles %}
 
         {% for article in object_list %}
           <div class="post-preview">
@@ -46,6 +48,7 @@
                 <a href="{% url 'blog:category' cat.slug %}">#{{cat.title}}</a>
               {% endfor %}
             </div>
+            <div>بازدید :{{ article.hits.count }}</div>
           </div>
           <hr>
         {% endfor %}
