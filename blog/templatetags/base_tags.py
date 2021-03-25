@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 
 from django import template
-from django.db.models import Count, Q
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Count, Q, Avg
 from setuptools.command.register import register
 
 from ..models import Category, Article
@@ -20,14 +21,40 @@ def category_navbar():
 	}
 
 
-@register.inclusion_tag("blog/partials/popular_articles.html")
+@register.inclusion_tag("blog/partials/side_bar.html")
 def popular_articles():
 	last_month = datetime.today() - timedelta(days=30)
 	return {
-		"popular_articles":  Article.objects.published().annotate(
+		"articles":  Article.objects.published().annotate(
 			count=Count('hits', filter=Q(articlehit__created__gt=last_month))
-	).order_by('-count','-publish')
+	).order_by('-count','-publish')[0:5],
+	"title":  "مقالات پربازدید ماه"
 	}
+
+
+@register.inclusion_tag("blog/partials/side_bar.html")
+def hot_articles():
+	last_month = datetime.today() - timedelta(days=30)
+	content_type_id = ContentType.objects.get(app_label='blog', model='article').id
+	return {
+		"articles":  Article.objects.published().annotate(
+			count=Count('comments', filter=Q(comments__posted__gt=last_month) & Q(comments__content_type_id=content_type_id) )
+	).order_by('-count','-publish')[:5],
+	"title":  "پربحث ترین مقالات ماه"
+	}
+
+
+@register.inclusion_tag("blog/partials/side_bar.html")
+def top_articles():
+	last_month = datetime.today() - timedelta(days=30)
+	content_type_id = ContentType.objects.get(app_label='blog', model='article').id
+	return {
+		"articles":  Article.objects.published().annotate(
+			count=Count('average', filter=Q(rating__content_type_id=content_type_id) )
+	).order_by('-count','-publish')[:5],
+	"title":  "پربحث ترین مقالات ماه"
+	}
+
 
 
 @register.inclusion_tag('registration/partials/link.html')
